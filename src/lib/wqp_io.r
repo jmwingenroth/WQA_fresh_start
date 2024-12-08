@@ -1,11 +1,32 @@
 library(dataRetrieval)
 library(dplyr)
 
+iterate_mli_download <- function(
+    mli_names, 
+    max_query_size = 3000
+    ) {
+
+    mli_queries <- split(mli_names, ceiling(seq_along(mli_names) / max_query_size))
+
+    mli_pull_data <- list()
+    for (i in 1:length(mli_queries)) {
+        print(paste0("Beginning WQP site metadata query ", i, " of ", length(mli_queries)))
+        mli_pull_data[[i]] <- whatWQPsites(siteid = mli_queries[[i]])
+    }
+
+    if (sum(sapply(mli_pull_data, nrow)) != length(mli_names)) {
+        warning("Data could not be retrieved for some sites")
+    }
+
+    return(mli_pull_data)
+
+}
+
 iterate_wqp_download <- function(
     characteristic_names,
     state_abbreviations,
     start_date
-) {
+    ) {
 
     wqp_params <- expand.grid(
         chem = characteristic_names, 
@@ -78,10 +99,10 @@ iterate_wqp_download <- function(
 
 }
 
-select_WQP_chars <- function(
+select_wqp_chars <- function(
     csv_path,
     pattern
-) {
+    ) {
     raw <- read.csv(csv_path)
     nh3_handles <- raw[grep(pattern, raw$charhandle), c("CharacteristicName", "charhandle")]
     return(nh3_handles)

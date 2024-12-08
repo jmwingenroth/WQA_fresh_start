@@ -19,7 +19,7 @@ wqp_convert_to_numeric <- c(
 invisible(lapply(list.files("src/lib", full.names = TRUE), source))
 
 # Load strings to query WQP for ammonia data
-nh3_handles <- select_WQP_chars(
+nh3_handles <- select_wqp_chars(
     "data/input/wqp_water_chars_handles.csv", 
     "ammonia"
 )
