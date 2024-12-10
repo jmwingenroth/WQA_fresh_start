@@ -20,10 +20,10 @@ wqp_pull <- read.fst("data/intermediate/wqp_pull.fst")
 mli_names <- unique(wqp_pull$MonitoringLocationIdentifier)
 
 # Pull WQP site data
-mli_pull <- iterate_mli_download(mli_names)
+mli_pull_data <- iterate_mli_download(mli_names)
 
 # Bind rows and save data
-mli_pull %>%
+mli_pull_data %>%
     lapply(mutate, across(mli_convert_to_numeric, as.numeric)) %>%
     bind_rows() %>%
     write.fst("data/intermediate/mli_pull.fst")

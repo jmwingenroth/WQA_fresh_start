@@ -1,0 +1,2 @@
+# Load packages
+library(terra)
