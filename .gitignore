@@ -2,6 +2,5 @@ data/input/2012_30m_cdls
 data/input/rasterized_crp
 data/input/wbd
 data/input/all_raw_wqd_and_sites.fst
-data/input/wqp_water_chars_handles.csv
 data/intermediate/wqp_pull.fst
 data/intermediate/mli_pull.fst
