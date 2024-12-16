@@ -1,0 +1,122 @@
+value,Class_Names,Histogram,CROP
+152,Shrubland,1930321388,
+176,Grassland/Pasture,1744621981,
+142,Evergreen Forest,1119067380,
+141,Deciduous Forest,1075449387,
+1,Corn,408946385,"Maize, Total"
+190,Woody Wetlands,340565017,
+5,Soybeans,316973699,Soybeans
+121,Developed/Open Space,289242304,
+24,Winter Wheat,155521512,Wheat
+111,Open Water,148144772,
+143,Mixed Forest,134936677,
+122,Developed/Low Intensity,127636333,
+61,Fallow/Idle Cropland,117769981,
+195,Herbaceous Wetlands,105625576,
+37,Other Hay/Non Alfalfa,105204059,Unknown
+131,Barren,92965495,
+36,Alfalfa,78271280,Unknown
+2,Cotton,70341119,Cotton
+23,Spring Wheat,59991178,Wheat
+123,Developed/Med Intensity,51000156,
+4,Sorghum,22734341,Other Cereals
+26,Dbl Crop WinWht/Soybeans,22075689,Wheat
+124,Developed/High Intensity,17605274,
+3,Rice,12215517,Rice
+21,Barley,7856114,Other Cereals
+212,Oranges,5694378,Fruits & Treenuts
+6,Sunflower,5368589,Other Oil Crops
+28,Oats,5245719,Other Cereals
+42,Dry Beans,5090787,Pulses
+22,Durum Wheat,5078434,Wheat
+75,Almonds,5037569,Fruits & Treenuts
+10,Peanuts,5003955,Other Oil Crops
+41,Sugarbeets,4881908,Sugar Beet
+43,Potatoes,4692424,Roots & Tubers
+31,Canola,4428098,Rapeseed / Canola
+45,Sugarcane,4241144,Sugar Cane
+59,Sod/Grass Seed,3827488,Unknown
+69,Grapes,3632074,Fruits & Treenuts
+68,Apples,2362927,Fruits & Treenuts
+53,Peas,2150644,Pulses
+27,Rye,2130845,Other Cereals
+29,Millet,2075242,Other Cereals
+112,Perennial Ice/Snow ,1892567,
+52,Lentils,1686690,Pulses
+225,Dbl Crop WinWht/Corn,1660728,"Maize, Total"
+54,Tomatoes,1582365,Vegetables
+76,Walnuts,1551055,Fruits & Treenuts
+74,Pecans,1481775,Fruits & Treenuts
+236,Dbl Crop WinWht/Sorghum,1334737,Wheat
+238,Dbl Crop WinWht/Cotton,1286425,Cotton
+12,Sweet Corn,1223765,Vegetables
+92,Aquaculture,1016395,
+204,Pistachios,997456,Fruits & Treenuts
+58,Clover/Wildflowers,917075,Unknown
+44,Other Crops,841459,Unknown
+66,Cherries,786956,Fruits & Treenuts
+205,Triticale,680636,Other Cereals
+72,Citrus,602438,Fruits & Treenuts
+49,Onions,601817,Vegetables
+242,Blueberries,557847,Fruits & Treenuts
+33,Safflower,548990,Other Oil Crops
+226,Dbl Crop Oats/Corn,518091,"Maize, Total"
+70,Christmas Trees,498470,Unknown
+254,Dbl Crop Barley/Soybeans,466527,Other Cereals
+32,Flaxseed,435659,Other Oil Crops
+13,Pop or Orn Corn,415076,"Maize, Total"
+57,Herbs,387297,Unknown
+211,Olives,303978,Other Oil Crops
+241,Dbl Crop Corn/Soybeans,279172,"Maize, Total"
+47,Misc Vegs & Fruits,254538,Vegetables
+71,Other Tree Crops,246270,Unknown
+46,Sweet Potatoes,239550,Roots & Tubers
+220,Plums,190190,Fruits & Treenuts
+206,Carrots,189708,Roots & Tubers
+250,Cranberries,177839,Fruits & Treenuts
+67,Peaches,177517,Fruits & Treenuts
+11,Tobacco,167839,Unknown
+48,Watermelons,152859,Fruits & Treenuts
+77,Pears,150349,Fruits & Treenuts
+217,Pomegranates,149269,Fruits & Treenuts
+237,Dbl Crop Barley/Corn,142148,"Maize, Total"
+230,Dbl Crop Lettuce/Durum Wht,135224,Vegetables
+239,Dbl Crop Soybeans/Cotton,129166,Cotton
+227,Lettuce,113689,Vegetables
+60,Switchgrass,106150,Unknown
+209,Cantaloupes,103122,Fruits & Treenuts
+221,Strawberries,98198,Fruits & Treenuts
+208,Garlic,93896,Vegetables
+229,Pumpkins,91007,Fruits & Treenuts
+216,Peppers,90930,Vegetables
+207,Asparagus,88720,Vegetables
+222,Squash,88052,Fruits & Treenuts
+243,Cabbage,85678,Vegetables
+240,Dbl Crop Soybeans/Oats,74581,Other Cereals
+56,Hops,63151,Other Cereals
+14,Mint,59012,Vegetables
+232,Dbl Crop Lettuce/Cotton,53192,Vegetables
+35,Mustard,50415,Vegetables
+214,Broccoli,47274,Vegetables
+224,Vetch,47130,Vegetables
+235,Dbl Crop Barley/Sorghum,46207,Other Cereals
+219,Greens,43391,Vegetables
+218,Nectarines,40785,Fruits & Treenuts
+246,Radishes,27493,Roots & Tubers
+30,Speltz,24262,Other Cereals
+213,Honeydew Melons,23409,Fruits & Treenuts
+50,Cucumbers,22789,Vegetables
+55,Caneberries,14816,Fruits & Treenuts
+231,Dbl Crop Lettuce/Cantaloupe,12922,Vegetables
+25,Other Small Grains,12024,Other Cereals
+244,Cauliflower,11643,Vegetables
+247,Turnips,9873,Roots & Tubers
+223,Apricots,9035,Fruits & Treenuts
+38,Camelina,7436,Other Oil Crops
+34,Rape Seed,5511,Rapeseed / Canola
+245,Celery,3025,Vegetables
+210,Prunes,2879,Fruits & Treenuts
+234,Dbl Crop Durum Wht/Sorghum,1599,Wheat
+249,Gourds,1034,Fruits & Treenuts
+248,Eggplants,694,Fruits & Treenuts
+233,Dbl Crop Lettuce/Barley,449,Vegetables

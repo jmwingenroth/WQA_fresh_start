@@ -18,10 +18,6 @@ Watershed Boundary Database from [USGS](https://www.usgs.gov/national-hydrograph
 
 Raw data from [SNAPD](https://www.nature.com/articles/s41597-022-01650-6)
 
-## NASS_QuickStats_fertilizer.csv
-
-Raw data from the [NASS QuickStats Ad-hoc query tool](https://quickstats.nass.usda.gov/)
-
-## cameron_2022_fertilizer_use.csv
+## ludemann_2022_fertilizer_use.csv
 
 Raw data for United States taken from .xlsx workbook available on [Dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.2rbnzs7qh)
