@@ -17,7 +17,7 @@ invisible(lapply(list.files("src/lib", full.names = TRUE), source))
 # Load CDL raster
 cdl_rast <- rast(cdl_path)
 
-# Load CRP rasters
+# Load CRP raster shapes
 crp_paths <- list.files(crp_dir, pattern = "2012", recursive = TRUE, full.names = TRUE)
 crp_rasts <- lapply(crp_paths, rast) 
 
@@ -55,6 +55,8 @@ fi_files <- crp_paths %>%
     str_extract("ras_crp.*$") %>%
     str_replace("crp","fi") %>%
     str_replace("2012","2011")
+
+coltab(cdl_rast) <- NULL
 
 for (i in 1:length(crp_rasts)) {
 
