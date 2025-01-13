@@ -11,9 +11,6 @@ fertilizer_path <- "./data/input/ludemann_2022_fertilizer_use.csv"
 cdl_levels_write_path <- "data/intermediate/cdl_crops.csv"
 cdl_ludemann_key_path <- "./data/intermediate/cdl_ludemann_key.csv"
 
-# Load function library
-invisible(lapply(list.files("src/lib", full.names = TRUE), source))
-
 # Load CDL raster
 cdl_rast <- rast(cdl_path)
 
