@@ -21,3 +21,7 @@ Raw data from [SNAPD](https://www.nature.com/articles/s41597-022-01650-6)
 ## ludemann_2022_fertilizer_use.csv
 
 Raw data for United States taken from .xlsx workbook available on [Dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.2rbnzs7qh)
+
+## state_fips_key.csv
+
+A key for converting between state names, abbreviations, and FIPS codes
