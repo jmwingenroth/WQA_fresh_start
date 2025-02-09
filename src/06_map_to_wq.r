@@ -19,7 +19,7 @@ huc_12 <- st_read(
     ) %>%
     st_transform(crp_crs) %>%
     st_simplify(dTolerance = 50) # meters (CRP pixel size)
-gc() # otherwise R keeps big WBD file in memory
+gc() # high-res WBD is time- and memory-intensitve
 
 fips_key <- read_csv("./data/input/state_fips_key.csv")
 
@@ -68,16 +68,78 @@ mli_sf <- mli_data_subset %>%
     ) %>%
     st_transform(crp_crs)
 
-# Calculate combined fertilizer intensity of all HUC-12s overlapping a 50 km radius around each MLI
-mli_fi <- mli_sf %>% select(
-    Name = MonitoringLocationName, 
-    MLI = MonitoringLocationIdentifier, 
-    MLI_HUC8 = HUCEightDigitCode
+# Calculate combined fertilizer intensity of nearby HUC-12s
+mli_fi_big <- mli_sf %>% 
+    select(
+        Name = MonitoringLocationName, 
+        MLI = MonitoringLocationIdentifier, 
+        MLI_HUC8 = HUCEightDigitCode
     ) %>%
-    st_buffer(dist = 5e4) %>%
+    st_buffer(dist = 5e4) %>% # 50 km
     st_join(fertilizer_sf) %>%
-    st_drop_geometry() %>%
+    st_drop_geometry()
+
+mli_fi_nb <- mli_fi_big %>%
     group_by(MLI) %>%
     summarise(across(c(areasqkm, `0`:`2022`), sum))
 
 
+# Find HUC-12 in which each MLI lies
+mli_huc12 <- mli_sf %>%
+    st_join(huc_12) %>%
+    st_drop_geometry() %>%
+    filter(!is.na(huc12)) %>%
+    select(
+        Name = MonitoringLocationName, 
+        MLI = MonitoringLocationIdentifier, 
+        MLI_HUC8 = HUCEightDigitCode,
+        huc12,
+        tohuc,
+        areasqkm,
+        states
+    ) %>%
+    group_by(MLI) %>%
+    mutate(n = n()) %>%
+    filter(n == 1)
+
+# Find all upstream HUCs among those nearby
+nb_hucs_list <- mli_fi_big %>%
+    select(MLI, huc12, tohuc) %>%
+    filter(MLI %in% mli_huc12$MLI) %>%
+    group_by(MLI) %>%
+    group_split()
+
+upstream_hucs_list <- list()
+upstream_error_tally <- 0
+for (i in seq_along(nb_hucs_list)) {
+    if (i %% 100 == 0) {
+        print(paste0(
+            "Found upstream HUC-12s for ",
+            i,
+            " of ",
+            length(nb_hucs_list),
+            " sites"
+        ))
+    }
+
+    temp <- nb_hucs_list[[i]]
+    origin <- mli_huc12[mli_huc12$MLI == temp$MLI[1],]$huc12
+    add <- filter(temp, tohuc == origin)
+    up <- add
+
+    iterations <- 0
+
+    while (nrow(add) > 0 && iterations < 1000) {
+        add <- filter(temp, tohuc %in% add$huc12)
+        up <- bind_rows(up, add)
+        iterations <- iterations + 1
+    }
+
+    if (iterations == 1000) {
+        print(paste0("Mapping error occurred for site ", i))
+        upstream_error_tally <- upstream_error_tally + 1
+    }
+
+    upstream_hucs_list[[i]] <- up
+
+}
