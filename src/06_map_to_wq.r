@@ -143,3 +143,19 @@ for (i in seq_along(nb_hucs_list)) {
     upstream_hucs_list[[i]] <- up
 
 }
+
+# Calculate combined fertilizer intensity of nearby, upstream HUC-12s
+mli_fi_upstream <- upstream_hucs_list %>%
+    bind_rows() %>%
+    left_join(fertilizer_sf) %>%
+    group_by(MLI) %>%
+    summarise(across(c(areasqkm, `0`:`2022`), sum))
+
+mli_fi <- left_join(
+    mli_fi_upstream,
+    mli_fi_nb, 
+    by = "MLI", 
+    suffix = c("_upstream", "_nearby")
+)
+
+write_fst(mli_fi, "data/intermediate/nitrogen_mass_by_MLI.fst")
