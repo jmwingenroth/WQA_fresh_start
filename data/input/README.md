@@ -16,10 +16,6 @@ NOTE: While the CDL (EPSG:5070) and CRP (EPSG:42303) data have different IDs for
 
 Watershed Boundary Database from [USGS](https://www.usgs.gov/national-hydrography/news/nhd-and-wbd-now-available-geopackage-format)
 
-## all_raw_wqd_and_sites.fst
-
-Raw data from [SNAPD](https://www.nature.com/articles/s41597-022-01650-6)
-
 ## ludemann_2022_fertilizer_use.csv
 
 Raw data for United States taken from .xlsx workbook available on [Dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.2rbnzs7qh)
