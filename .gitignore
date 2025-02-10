@@ -1,6 +1,3 @@
-data/input/2012_30m_cdls
-data/input/rasterized_crp
-data/input/wbd
-data/input/all_raw_wqd_and_sites.fst
 data/intermediate/wqp_pull.fst
 data/intermediate/mli_pull.fst
+data/intermediate/nitrogen_mass_by_huc12.fst
