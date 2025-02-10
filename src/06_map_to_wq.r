@@ -7,6 +7,9 @@ library(sf)
 sf_use_s2(FALSE)
 crp_crs <- "+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs"
 
+# Load function library
+invisible(lapply(list.files("src/lib", full.names = TRUE), source))
+
 # Load data
 wqp_data <- read_fst("./data/intermediate/wqp_pull.fst") %>% as_tibble()
 mli_data <- read_fst("./data/intermediate/mli_pull.fst") %>% as_tibble()
@@ -44,12 +47,7 @@ conus_fips <- fips_key %>%
     .$st
 
 mli_subset <- wqp_data %>%
-    filter(
-        CharacteristicName == "Ammonia",
-        ResultMeasure.MeasureUnitCode == "mg/L",
-        ProviderName == "STORET",
-        ResultSampleFractionText == "Total"
-    ) %>%
+    filter_wqp() %>%
     .$MonitoringLocationIdentifier %>%
     unique()
 
