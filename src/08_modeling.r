@@ -7,7 +7,7 @@ model_data <- read_csv("data/output/model_data.csv")
 
 # Plot sample size vs lookback length
 lookback_length_plot <- model_data %>%
-    summarise(across(everything(), ~sum(!is.na(.x)))) %>% View()
+    summarise(across(everything(), ~sum(!is.na(.x)))) %>%
     pivot_longer(N_removed_lag_1:N_removed_lag_11) %>%
     mutate(name = as.numeric(str_extract(name, "[0-9]+"))) %>%
     ggplot(aes(x = name, y = value)) +
