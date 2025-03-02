@@ -123,10 +123,12 @@ model_data <- lagged_data %>%
         loc_area_1to8y = rowMeans(across(local_sqkm_crp_lag1:local_sqkm_crp_lag8)),
         loc_area_1to9y = rowMeans(across(local_sqkm_crp_lag1:local_sqkm_crp_lag9)),
         huc8 = str_sub(huc12,,8), 
-        huc4 = str_sub(huc12,,4)
+        huc4 = str_sub(huc12,,4),
+        up_N_dens = upstream_kg_N/upstream_sqkm_tot
     ) %>%
     mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*local_kg_N, .names = "{.col}_x_locN")) %>%
-    mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*upstream_kg_N, .names = "{.col}_x_upN"))
+    mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*upstream_kg_N, .names = "{.col}_x_upN")) %>%
+    mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*up_N_dens, .names = "{.col}_x_upNdens"))
 
 # Run models
 m1 <- model_data %>%
@@ -158,6 +160,23 @@ m2 <- model_data %>%
                 upstream_kg_N*up_area_1to7y + upstream_kg_N*loc_area_1to7y, 
                 upstream_kg_N*up_area_1to8y + upstream_kg_N*loc_area_1to8y, 
                 upstream_kg_N*up_area_1to9y + upstream_kg_N*loc_area_1to9y
+            )|
+            wq_month + huc4^wq_year + huc8,
+        cluster = "huc8"
+    )
+
+m2b <- model_data %>%
+    feols(
+        fml = log10(wq_conc) ~ 
+            sw(
+                up_N_dens*up_area_1to2y + up_N_dens*loc_area_1to2y, 
+                up_N_dens*up_area_1to3y + up_N_dens*loc_area_1to3y, 
+                up_N_dens*up_area_1to4y + up_N_dens*loc_area_1to4y, 
+                up_N_dens*up_area_1to5y + up_N_dens*loc_area_1to5y,
+                up_N_dens*up_area_1to6y + up_N_dens*loc_area_1to6y, 
+                up_N_dens*up_area_1to7y + up_N_dens*loc_area_1to7y, 
+                up_N_dens*up_area_1to8y + up_N_dens*loc_area_1to8y, 
+                up_N_dens*up_area_1to9y + up_N_dens*loc_area_1to9y
             )|
             wq_month + huc4^wq_year + huc8,
         cluster = "huc8"
@@ -197,6 +216,23 @@ m4 <- model_data %>%
         cluster = "huc8"
     )
 
+m4b <- model_data %>%
+    feols(
+        fml = log10(wq_conc) ~ 
+            sw(
+                up_area_1to2y + loc_area_1to2y + up_area_1to2y_x_upNdens + loc_area_1to2y_x_upNdens, 
+                up_area_1to3y + loc_area_1to3y + up_area_1to3y_x_upNdens + loc_area_1to3y_x_upNdens, 
+                up_area_1to4y + loc_area_1to4y + up_area_1to4y_x_upNdens + loc_area_1to4y_x_upNdens, 
+                up_area_1to5y + loc_area_1to5y + up_area_1to5y_x_upNdens + loc_area_1to5y_x_upNdens, 
+                up_area_1to6y + loc_area_1to6y + up_area_1to6y_x_upNdens + loc_area_1to6y_x_upNdens, 
+                up_area_1to7y + loc_area_1to7y + up_area_1to7y_x_upNdens + loc_area_1to7y_x_upNdens, 
+                up_area_1to8y + loc_area_1to8y + up_area_1to8y_x_upNdens + loc_area_1to8y_x_upNdens, 
+                up_area_1to9y + loc_area_1to9y + up_area_1to9y_x_upNdens + loc_area_1to9y_x_upNdens
+            )|
+            wq_month + huc4^wq_year + huc8,
+        cluster = "huc8"
+    )
+
 m5 <- model_data %>%
     feols(
         fml = log10(wq_conc) ~ 
@@ -231,36 +267,54 @@ m6 <- model_data %>%
         cluster = "huc8"
     )
 
-# Save model data
-m_list <- list(
-    m1 = m1,
-    m2 = m2,
-    m3 = m3,
-    m4 = m4,
-    m5 = m5,
-    m6 = m6
-)
-
-for (i in seq_along(m_list)) {
-    etable(
-        m_list[i],
-        file = paste0("data/output/",names(m_list[i]),"_results.tex"),
-        tex = TRUE,
-        replace = TRUE,
-        digits = 4,
-        digits.stats = 3
+m6b <- model_data %>%
+    feols(
+        fml = log10(wq_conc) ~ 
+            sw(
+                up_N_dens + up_area_1to2y_x_upNdens + loc_area_1to2y_x_upNdens, 
+                up_N_dens + up_area_1to3y_x_upNdens + loc_area_1to3y_x_upNdens, 
+                up_N_dens + up_area_1to4y_x_upNdens + loc_area_1to4y_x_upNdens, 
+                up_N_dens + up_area_1to5y_x_upNdens + loc_area_1to5y_x_upNdens, 
+                up_N_dens + up_area_1to6y_x_upNdens + loc_area_1to6y_x_upNdens, 
+                up_N_dens + up_area_1to7y_x_upNdens + loc_area_1to7y_x_upNdens, 
+                up_N_dens + up_area_1to8y_x_upNdens + loc_area_1to8y_x_upNdens, 
+                up_N_dens + up_area_1to9y_x_upNdens + loc_area_1to9y_x_upNdens
+            )|
+            wq_month + huc4^wq_year + huc8,
+        cluster = "huc8"
     )
-}
 
-# Make pdf
-repo_wd <- getwd()
-setwd("data/output")
-tools::texi2pdf("doc.tex", clean = TRUE)
-setwd(repo_wd)
+# # Save model data
+# m_list <- list(
+#     m1 = m1,
+#     m2 = m2,
+#     m3 = m3,
+#     m4 = m4,
+#     m5 = m5,
+#     m6 = m6
+# )
 
-# Make data coverage plot
-p1 <- tidy_data %>%
-    ggplot() +
-    geom_sf(aes(color = as.numeric(huc12)))
+# for (i in seq_along(m_list)) {
+#     etable(
+#         m_list[i],
+#         file = paste0("data/output/",names(m_list[i]),"_results.tex"),
+#         tex = TRUE,
+#         replace = TRUE,
+#         digits = 4,
+#         se.below = FALSE,
+#         digits.stats = 3
+#     )
+# }
 
-ggsave("figs/test/09_data_coverage.svg", p1)
+# # Make pdf
+# repo_wd <- getwd()
+# setwd("data/output")
+# tools::texi2pdf("doc.tex", clean = TRUE)
+# setwd(repo_wd)
+
+# # Make data coverage plot
+# p1 <- tidy_data %>%
+#     ggplot() +
+#     geom_sf(aes(color = as.numeric(huc12)))
+
+# ggsave("figs/test/09_data_coverage.svg", p1)
