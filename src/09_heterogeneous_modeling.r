@@ -131,43 +131,15 @@ model_data <- lagged_data %>%
     mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*up_N_dens, .names = "{.col}_x_upNdens"))
 
 # Run models
-m1 <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                local_kg_N*up_area_1to2y + local_kg_N*loc_area_1to2y, 
-                local_kg_N*up_area_1to3y + local_kg_N*loc_area_1to3y, 
-                local_kg_N*up_area_1to4y + local_kg_N*loc_area_1to4y, 
-                local_kg_N*up_area_1to5y + local_kg_N*loc_area_1to5y,
-                local_kg_N*up_area_1to6y + local_kg_N*loc_area_1to6y, 
-                local_kg_N*up_area_1to7y + local_kg_N*loc_area_1to7y, 
-                local_kg_N*up_area_1to8y + local_kg_N*loc_area_1to8y, 
-                local_kg_N*up_area_1to9y + local_kg_N*loc_area_1to9y
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-m2 <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                upstream_kg_N*up_area_1to2y + upstream_kg_N*loc_area_1to2y, 
-                upstream_kg_N*up_area_1to3y + upstream_kg_N*loc_area_1to3y, 
-                upstream_kg_N*up_area_1to4y + upstream_kg_N*loc_area_1to4y, 
-                upstream_kg_N*up_area_1to5y + upstream_kg_N*loc_area_1to5y,
-                upstream_kg_N*up_area_1to6y + upstream_kg_N*loc_area_1to6y, 
-                upstream_kg_N*up_area_1to7y + upstream_kg_N*loc_area_1to7y, 
-                upstream_kg_N*up_area_1to8y + upstream_kg_N*loc_area_1to8y, 
-                upstream_kg_N*up_area_1to9y + upstream_kg_N*loc_area_1to9y
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
 m2b <- model_data %>%
+    mutate(
+        across(
+            c(up_N_dens, starts_with("up_area"), starts_with("loc_area")),
+            asinh
+        )
+    ) %>%
     feols(
-        fml = log10(wq_conc) ~ 
+        fml = asinh(wq_conc) ~ 
             sw(
                 up_N_dens*up_area_1to2y + up_N_dens*loc_area_1to2y, 
                 up_N_dens*up_area_1to3y + up_N_dens*loc_area_1to3y, 
@@ -182,139 +154,10 @@ m2b <- model_data %>%
         cluster = "huc8"
     )
 
-m3 <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                up_area_1to2y + loc_area_1to2y + up_area_1to2y_x_locN + loc_area_1to2y_x_locN, 
-                up_area_1to3y + loc_area_1to3y + up_area_1to3y_x_locN + loc_area_1to3y_x_locN, 
-                up_area_1to4y + loc_area_1to4y + up_area_1to4y_x_locN + loc_area_1to4y_x_locN, 
-                up_area_1to5y + loc_area_1to5y + up_area_1to5y_x_locN + loc_area_1to5y_x_locN, 
-                up_area_1to6y + loc_area_1to6y + up_area_1to6y_x_locN + loc_area_1to6y_x_locN, 
-                up_area_1to7y + loc_area_1to7y + up_area_1to7y_x_locN + loc_area_1to7y_x_locN, 
-                up_area_1to8y + loc_area_1to8y + up_area_1to8y_x_locN + loc_area_1to8y_x_locN, 
-                up_area_1to9y + loc_area_1to9y + up_area_1to9y_x_locN + loc_area_1to9y_x_locN
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-m4 <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                up_area_1to2y + loc_area_1to2y + up_area_1to2y_x_upN + loc_area_1to2y_x_upN, 
-                up_area_1to3y + loc_area_1to3y + up_area_1to3y_x_upN + loc_area_1to3y_x_upN, 
-                up_area_1to4y + loc_area_1to4y + up_area_1to4y_x_upN + loc_area_1to4y_x_upN, 
-                up_area_1to5y + loc_area_1to5y + up_area_1to5y_x_upN + loc_area_1to5y_x_upN, 
-                up_area_1to6y + loc_area_1to6y + up_area_1to6y_x_upN + loc_area_1to6y_x_upN, 
-                up_area_1to7y + loc_area_1to7y + up_area_1to7y_x_upN + loc_area_1to7y_x_upN, 
-                up_area_1to8y + loc_area_1to8y + up_area_1to8y_x_upN + loc_area_1to8y_x_upN, 
-                up_area_1to9y + loc_area_1to9y + up_area_1to9y_x_upN + loc_area_1to9y_x_upN
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-m4b <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                up_area_1to2y + loc_area_1to2y + up_area_1to2y_x_upNdens + loc_area_1to2y_x_upNdens, 
-                up_area_1to3y + loc_area_1to3y + up_area_1to3y_x_upNdens + loc_area_1to3y_x_upNdens, 
-                up_area_1to4y + loc_area_1to4y + up_area_1to4y_x_upNdens + loc_area_1to4y_x_upNdens, 
-                up_area_1to5y + loc_area_1to5y + up_area_1to5y_x_upNdens + loc_area_1to5y_x_upNdens, 
-                up_area_1to6y + loc_area_1to6y + up_area_1to6y_x_upNdens + loc_area_1to6y_x_upNdens, 
-                up_area_1to7y + loc_area_1to7y + up_area_1to7y_x_upNdens + loc_area_1to7y_x_upNdens, 
-                up_area_1to8y + loc_area_1to8y + up_area_1to8y_x_upNdens + loc_area_1to8y_x_upNdens, 
-                up_area_1to9y + loc_area_1to9y + up_area_1to9y_x_upNdens + loc_area_1to9y_x_upNdens
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-m5 <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                local_kg_N + up_area_1to2y_x_locN + loc_area_1to2y_x_locN, 
-                local_kg_N + up_area_1to3y_x_locN + loc_area_1to3y_x_locN, 
-                local_kg_N + up_area_1to4y_x_locN + loc_area_1to4y_x_locN, 
-                local_kg_N + up_area_1to5y_x_locN + loc_area_1to5y_x_locN, 
-                local_kg_N + up_area_1to6y_x_locN + loc_area_1to6y_x_locN, 
-                local_kg_N + up_area_1to7y_x_locN + loc_area_1to7y_x_locN, 
-                local_kg_N + up_area_1to8y_x_locN + loc_area_1to8y_x_locN, 
-                local_kg_N + up_area_1to9y_x_locN + loc_area_1to9y_x_locN
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-m6 <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                upstream_kg_N + up_area_1to2y_x_upN + loc_area_1to2y_x_upN, 
-                upstream_kg_N + up_area_1to3y_x_upN + loc_area_1to3y_x_upN, 
-                upstream_kg_N + up_area_1to4y_x_upN + loc_area_1to4y_x_upN, 
-                upstream_kg_N + up_area_1to5y_x_upN + loc_area_1to5y_x_upN, 
-                upstream_kg_N + up_area_1to6y_x_upN + loc_area_1to6y_x_upN, 
-                upstream_kg_N + up_area_1to7y_x_upN + loc_area_1to7y_x_upN, 
-                upstream_kg_N + up_area_1to8y_x_upN + loc_area_1to8y_x_upN, 
-                upstream_kg_N + up_area_1to9y_x_upN + loc_area_1to9y_x_upN
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-m6b <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                up_N_dens + up_area_1to2y_x_upNdens + loc_area_1to2y_x_upNdens, 
-                up_N_dens + up_area_1to3y_x_upNdens + loc_area_1to3y_x_upNdens, 
-                up_N_dens + up_area_1to4y_x_upNdens + loc_area_1to4y_x_upNdens, 
-                up_N_dens + up_area_1to5y_x_upNdens + loc_area_1to5y_x_upNdens, 
-                up_N_dens + up_area_1to6y_x_upNdens + loc_area_1to6y_x_upNdens, 
-                up_N_dens + up_area_1to7y_x_upNdens + loc_area_1to7y_x_upNdens, 
-                up_N_dens + up_area_1to8y_x_upNdens + loc_area_1to8y_x_upNdens, 
-                up_N_dens + up_area_1to9y_x_upNdens + loc_area_1to9y_x_upNdens
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-# # Save model data
-# m_list <- list(
-#     m1 = m1,
-#     m2 = m2,
-#     m3 = m3,
-#     m4 = m4,
-#     m5 = m5,
-#     m6 = m6
-# )
-
-# for (i in seq_along(m_list)) {
-#     etable(
-#         m_list[i],
-#         file = paste0("data/output/",names(m_list[i]),"_results.tex"),
-#         tex = TRUE,
-#         replace = TRUE,
-#         digits = 4,
-#         se.below = FALSE,
-#         digits.stats = 3
-#     )
-# }
-
-# # Make pdf
-# repo_wd <- getwd()
-# setwd("data/output")
-# tools::texi2pdf("doc.tex", clean = TRUE)
-# setwd(repo_wd)
-
-# # Make data coverage plot
-# p1 <- tidy_data %>%
-#     ggplot() +
-#     geom_sf(aes(color = as.numeric(huc12)))
-
-# ggsave("figs/test/09_data_coverage.svg", p1)
+# Save model output
+options(width = 200)
+etable(
+    m2b,
+    se.below = FALSE,
+    digits.stats = 3
+)
