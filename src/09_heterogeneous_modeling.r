@@ -134,7 +134,7 @@ model_data <- lagged_data %>%
 m2b <- model_data %>%
     mutate(
         across(
-            c(up_N_dens, starts_with("up_area"), starts_with("loc_area")),
+            c(starts_with("up_area"), starts_with("loc_area")),
             asinh
         )
     ) %>%
