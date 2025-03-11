@@ -161,3 +161,19 @@ etable(
     se.below = FALSE,
     digits.stats = 3
 )
+
+# Make a table of local and upstream CRP sqkm deciles
+
+deciles <- seq(0,1,.1)
+tidy_data %>%
+    st_drop_geometry() %>%
+    summarise(across(
+        upstream_sqkm_crp_2012:local_sqkm_crp_2022, 
+        ~round(quantile(.x, probs = deciles), 2))
+    ) %>%
+    rename_all(~str_replace(.x, "upstream_sqkm_crp_", "up_")) %>%
+    rename_all(~str_replace(.x, "local_sqkm_crp_", "loc_")) %>%
+    mutate(quantile = deciles) %>%
+    select(quantile, everything())
+
+
