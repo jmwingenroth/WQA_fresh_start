@@ -48,8 +48,3 @@ model_data %>%
         digits = 4,
         digits.stats = 3
     )
-
-repo_wd <- getwd()
-setwd("data/output")
-tools::texi2pdf("doc.tex", clean = TRUE)
-setwd(repo_wd)
