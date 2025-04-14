@@ -9,7 +9,7 @@ library(fst)
 sf_use_s2(FALSE)
 
 # Set parameters
-crp_enroll_dir <- "L:/Project-AgWeather/data/int/rasterized_crp/states/enroll_year/"
+crp_disenroll_dir <- "L:/Project-AgWeather/data/int/rasterized_crp/states/disenroll_year/"
 crp_years <- 2012:2022
 crp_crs <- "+proj=aea +lat_0=23 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs"
 fi_dir <- "L:/Project-AgWeather/data/int/N_fertilizer_intensity/"
@@ -17,14 +17,14 @@ overwrite_figure <- TRUE
 
 # Load CRP and FI path names
 crp_files <- list.files(
-    crp_enroll_dir, 
+    crp_disenroll_dir, 
     pattern = "crp_[0-9]*.*tif", 
     full.names = TRUE
 )
 
 fi_files <- list.files(
     fi_dir, 
-    pattern = "fi_[0-9]*.*tif", 
+    pattern = "fi_[0-9]*_2023*.*tif", 
     full.names = TRUE
 )
 
@@ -43,7 +43,7 @@ fi_fips <- fi_files %>%
     as.integer()
 
 if (!all(crp_fips == fi_fips)) {
-    stop("State(s) missing CRP enrollment or fertilizer intensity rasters")
+    stop("State(s) missing CRP disenrollment or fertilizer intensity rasters")
 }
 
 # Load FIPS key
@@ -71,7 +71,7 @@ huc_12 <- st_read(
     st_simplify(dTolerance = 50) # meters (CRP pixel size)
 gc() # otherwise R keeps big WBD file in memory
 
-# Extract FI x CRP enrollment raster data to HUC-12 polygons (COMPUTE-INTENSIVE)
+# Extract FI x CRP disenrollment raster data to HUC-12 polygons (COMPUTE-INTENSIVE)
 fi_huc12 <- list()
 for (i in 1:nrow(raster_params)) {
 
@@ -127,4 +127,4 @@ if (overwrite_figure) {
 }
 
 # Save output
-write_fst(fert_mass_huc12_tidy, "./data/intermediate/nitrogen_mass_by_huc12.fst")
+write_fst(fert_mass_huc12_tidy, "./data/intermediate/nitrogen_disenroll_mass_by_huc12.fst")
