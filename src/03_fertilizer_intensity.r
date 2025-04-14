@@ -3,7 +3,7 @@ library(terra)
 library(tidyverse)
 
 # Load parameters
-cdl_path <- "L:/Project-AgWeather/data/raw/nass/cdl/2011_30m_cdls/2011_30m_cdls.tif"
+cdl_path <- "L:/Project-AgWeather/data/raw/nass/cdl/2023_30m_cdls/2023_30m_cdls.tif"
 crp_dir <- "L:/Project-AgWeather/data/int/rasterized_crp/states"
 fi_write_dir <- "L:/Project-AgWeather/data/int/N_fertilizer_intensity"
 
@@ -14,7 +14,7 @@ cdl_ludemann_key_path <- "./data/intermediate/cdl_ludemann_key.csv"
 # Load CDL raster
 cdl_rast <- rast(cdl_path)
 
-# Load CRP raster shapes
+# Load CRP raster shapes (year doesn't matter)
 crp_paths <- list.files(crp_dir, pattern = "2012", recursive = TRUE, full.names = TRUE)
 crp_rasts <- lapply(crp_paths, rast) 
 
@@ -51,7 +51,7 @@ cdl_fi_key <- left_join(cdl_ludemann_key, fi_data)
 fi_files <- crp_paths %>%
     str_extract("ras_crp.*$") %>%
     str_replace("crp","fi") %>%
-    str_replace("2012","2011")
+    str_replace("2012","2023")
 
 coltab(cdl_rast) <- NULL
 
