@@ -1,0 +1,1 @@
+This folder contains code for a miniature version of the model constrained to Indiana. It uses data generated/retrieved by code in the rest of the `src/` folder in some places.

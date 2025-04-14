@@ -15,6 +15,7 @@ wqp_data <- read_fst("./data/intermediate/wqp_pull.fst") %>% as_tibble()
 mli_data <- read_fst("./data/intermediate/mli_pull.fst") %>% as_tibble()
 
 fertilizer <- read_fst("./data/intermediate/nitrogen_mass_by_huc12.fst") %>% as_tibble()
+ag <- read_csv("./data/intermediate/indiana_ag_sqkm_by_huc12.csv")
 
 huc_12 <- st_read(
     "L:/Project-AgWeather/data/raw/wbd/WBD_National_GPKG.gpkg",
@@ -26,7 +27,7 @@ gc() # high-res WBD is time- and memory-intensitve
 
 fips_key <- read_csv("./data/input/state_fips_key.csv")
 
-# Calculate HUC-12 centroids and tie to fertilizer data
+# Calculate HUC-12 centroids and tie to fertilizer and ag data
 fertilizer_sf <- huc_12 %>%
     select(
         name,
@@ -36,14 +37,14 @@ fertilizer_sf <- huc_12 %>%
         states
     ) %>%
     st_centroid() %>%
-    right_join(fertilizer) %>%
-    pivot_wider(names_from = year, values_from = fertilizer_mass)
+    right_join(ag) %>%
+    right_join(filter(fertilizer, year == 0))
 
 # Subset MLIs
 # NOTE: Focusing on a sizable chunk of the WQP dataset with consistent SOP for now
 # currently, n = 391,159
 conus_fips <- fips_key %>%
-    filter(!stusps %in% c("AK", "HI")) %>%
+    filter(stusps %in% c("IN")) %>%
     .$st
 
 mli_subset <- wqp_data %>%
@@ -79,8 +80,7 @@ mli_fi_big <- mli_sf %>%
 
 mli_fi_nb <- mli_fi_big %>%
     group_by(MLI) %>%
-    summarise(across(c(areasqkm, `0`:`2022`), sum))
-
+    summarise(across(c(areasqkm, ag_area = area_sqkm, `0` = fertilizer_mass), sum))
 
 # Find HUC-12 in which each MLI lies
 mli_huc12 <- mli_sf %>%
@@ -147,7 +147,7 @@ mli_fi_upstream <- upstream_hucs_list %>%
     bind_rows() %>%
     left_join(fertilizer_sf) %>%
     group_by(MLI) %>%
-    summarise(across(c(areasqkm, `0`:`2022`), sum))
+    summarise(across(c(areasqkm, ag_area = area_sqkm, `0` = fertilizer_mass), sum))
 
 mli_fi <- left_join(
     mli_fi_upstream,
