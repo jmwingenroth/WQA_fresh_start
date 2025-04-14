@@ -13,7 +13,8 @@ invisible(lapply(list.files("src/lib", full.names = TRUE), source))
 wqp <- read_fst("./data/intermediate/wqp_pull.fst")
 
 crp <- read_sf("./data/input/wqp_crp_upstream_and_local.gpkg")
-nitro <- read_fst("./data/intermediate/nitrogen_mass_by_MLI.fst")
+nitro <- read_fst("./data/intermediate/nitrogen_mass_by_MLI copy.fst")
+new_vars <- read_fst("./data/intermediate/new_vars_by_MLI.fst")
 # ag <- read_csv("./data/intermediate/indiana_ag_sqkm_by_huc12.csv")
 # crp_x_nitro <- read_csv("./data/intermediate/indiana_crp_nitrogen_mass_by_huc12.csv")
 
@@ -24,8 +25,6 @@ nitro_tidy <- nitro %>%
         MLI,
         upstream_sqkm_tot = areasqkm_upstream,
         local_sqkm_tot = areasqkm_nearby,
-        upstream_ag_sqkm_tot = ag_area_upstream,
-        local_ag_sqkm_tot = ag_area_nearby,
         upstream_kg_N = `0_upstream`,
         local_kg_N = `0_nearby`
     )
@@ -68,12 +67,17 @@ wqp_tidy <- wqp %>%
     # When multiple measurements were made on the same day, take the mean
     summarise(wq_conc = mean(wq_conc), .by = MLI:wq_year)
 
+ag_tidy <- new_vars %>%
+    as_tibble() %>%
+    select(MLI, contains("ag_area_sqkm_0"))
+
 tidy_data <- crp_tidy %>%
-    inner_join(nitro_tidy) %>%
+    inner_join(ag_tidy) %>% 
+    inner_join(nitro_tidy) %>% 
     inner_join(wqp_tidy) %>%
     select(MLI, huc12, state, date, wq_month, wq_year, wq_conc, everything()) %>%
-    mutate(across(upstream_sqkm_crp_2012:upstream_sqkm_crp_2022, \(x) x/upstream_ag_sqkm_tot)) %>%
-    mutate(across(local_sqkm_crp_2012:local_sqkm_crp_2022, \(x) x/local_ag_sqkm_tot))
+    mutate(across(upstream_sqkm_crp_2012:upstream_sqkm_crp_2022, \(x) x/ag_area_sqkm_0_upstream)) %>%
+    mutate(across(local_sqkm_crp_2012:local_sqkm_crp_2022, \(x) x/ag_area_sqkm_0_nearby))
 
 # Create lagged version of data
 lagged_data <- tidy_data %>%
@@ -133,11 +137,8 @@ model_data <- lagged_data %>%
         loc_area_1to9y = rowMeans(across(local_sqkm_crp_lag1:local_sqkm_crp_lag9)),
         huc8 = str_sub(huc12,,8), 
         huc4 = str_sub(huc12,,4),
-        up_N_dens = upstream_kg_N/upstream_sqkm_tot
-    ) %>%
-    mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*local_kg_N, .names = "{.col}_x_locN")) %>%
-    mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*upstream_kg_N, .names = "{.col}_x_upN")) %>%
-    mutate(across(up_area_1to2y:loc_area_1to9y, \(x) x*up_N_dens, .names = "{.col}_x_upNdens"))
+        up_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot/100 # 100 hectares per sqkm
+    )
 
 # Run models
 m2b <- model_data %>%
@@ -150,14 +151,14 @@ m2b <- model_data %>%
     feols(
         fml = asinh(wq_conc) ~ 
             sw(
-                up_N_dens*up_area_1to2y + up_N_dens*loc_area_1to2y, 
-                up_N_dens*up_area_1to3y + up_N_dens*loc_area_1to3y, 
-                up_N_dens*up_area_1to4y + up_N_dens*loc_area_1to4y, 
-                up_N_dens*up_area_1to5y + up_N_dens*loc_area_1to5y,
-                up_N_dens*up_area_1to6y + up_N_dens*loc_area_1to6y, 
-                up_N_dens*up_area_1to7y + up_N_dens*loc_area_1to7y, 
-                up_N_dens*up_area_1to8y + up_N_dens*loc_area_1to8y, 
-                up_N_dens*up_area_1to9y + up_N_dens*loc_area_1to9y
+                up_N_kg_per_hectare*up_area_1to2y + up_N_kg_per_hectare*loc_area_1to2y, 
+                up_N_kg_per_hectare*up_area_1to3y + up_N_kg_per_hectare*loc_area_1to3y, 
+                up_N_kg_per_hectare*up_area_1to4y + up_N_kg_per_hectare*loc_area_1to4y, 
+                up_N_kg_per_hectare*up_area_1to5y + up_N_kg_per_hectare*loc_area_1to5y,
+                up_N_kg_per_hectare*up_area_1to6y + up_N_kg_per_hectare*loc_area_1to6y, 
+                up_N_kg_per_hectare*up_area_1to7y + up_N_kg_per_hectare*loc_area_1to7y, 
+                up_N_kg_per_hectare*up_area_1to8y + up_N_kg_per_hectare*loc_area_1to8y, 
+                up_N_kg_per_hectare*up_area_1to9y + up_N_kg_per_hectare*loc_area_1to9y
             )|
             wq_month + huc4^wq_year + huc8,
         cluster = "huc8"
