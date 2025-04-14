@@ -3,3 +3,4 @@ data/intermediate/mli_pull.fst
 data/intermediate/nitrogen_mass_by_huc12.fst
 data/intermediate/nitrogen_mass_by_MLI.fst
 data/input/wqp_crp_upstream_and_local.gpkg
+data/intermediate/ag_area_by_huc12.fst
