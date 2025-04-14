@@ -8,3 +8,4 @@ data/intermediate/crp_disenroll_by_huc12_messy.fst
 data/intermediate/crp_enroll_by_huc12_messy.fst
 data/intermediate/nitrogen_disenroll_mass_by_huc12.fst
 data/intermediate/ag_area_by_MLI.fst
+data/intermediate/new_vars_by_MLI.fst
