@@ -116,7 +116,7 @@ lagged_data <- tidy_data %>%
         names_prefix = "local_sqkm_crp_lag"
     )
 
-# Average n years of lookback for n = 1 to n = 5
+# Average n years of lookback for n = 2 to n = 9
 model_data <- lagged_data %>%
     mutate(
         up_area_1to2y = rowMeans(across(upstream_sqkm_crp_lag1:upstream_sqkm_crp_lag2)),
