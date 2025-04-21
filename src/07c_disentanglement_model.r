@@ -288,9 +288,9 @@ for (i in seq_along(models_data)) {
 # Save model output
 options(width = 200)
 etable(
-    lag_4 = models[[1]],
-    lag_5 = models[[2]],
-    lag_6 = models[[3]],
+    lag_1to4 = models[[1]],
+    lag_1to5 = models[[2]],
+    lag_1to6 = models[[3]],
     se.below = FALSE,
     digits.stats = 3
 )
