@@ -10,7 +10,7 @@ invisible(lapply(list.files("src/lib", full.names = TRUE), source))
 # Load data
 wqp <- read_fst("./data/intermediate/wqp_pull.fst")
 
-nitro <- read_fst("./data/intermediate/nitrogen_mass_by_MLI.fst")
+nitro <- read_fst("./data/intermediate/nitrogen_mass_by_MLI copy.fst")
 crp <- read_sf("./data/input/wqp_crp_upstream_and_local.gpkg")
 
 # Tidy data
