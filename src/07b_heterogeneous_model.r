@@ -137,11 +137,12 @@ model_data <- lagged_data %>%
         loc_area_1to9y = rowMeans(across(local_sqkm_crp_lag1:local_sqkm_crp_lag9)),
         huc8 = str_sub(huc12,,8), 
         huc4 = str_sub(huc12,,4),
-        up_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot # /100 # 100 hectares per sqkm
+        up_N_dens = upstream_kg_N/upstream_sqkm_tot,
+        up_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot/100 # 100 hectares per sqkm
     )
 
 # Run models
-m2b <- model_data %>%
+old_het <- model_data %>%
     # mutate(
     #     across(
     #         c(starts_with("up_area"), starts_with("loc_area")),
@@ -151,14 +152,30 @@ m2b <- model_data %>%
     feols(
         fml = log10(wq_conc) ~ 
             sw(
-                up_N_kg_per_hectare*up_area_1to2y + up_N_kg_per_hectare*loc_area_1to2y, 
+                up_N_dens*up_area_1to3y + up_N_dens*loc_area_1to3y, 
+                up_N_dens*up_area_1to4y + up_N_dens*loc_area_1to4y, 
+                up_N_dens*up_area_1to5y + up_N_dens*loc_area_1to5y,
+                up_N_dens*up_area_1to6y + up_N_dens*loc_area_1to6y
+            )|
+            wq_month + huc4^wq_year + huc8,
+        cluster = "huc8"
+    )
+
+# Run models
+new_het <- model_data %>%
+    mutate(
+        across(
+            c(starts_with("up_area"), starts_with("loc_area")),
+            asinh
+        )
+    ) %>%
+    feols(
+        fml = asinh(wq_conc) ~ 
+            sw(
                 up_N_kg_per_hectare*up_area_1to3y + up_N_kg_per_hectare*loc_area_1to3y, 
                 up_N_kg_per_hectare*up_area_1to4y + up_N_kg_per_hectare*loc_area_1to4y, 
                 up_N_kg_per_hectare*up_area_1to5y + up_N_kg_per_hectare*loc_area_1to5y,
-                up_N_kg_per_hectare*up_area_1to6y + up_N_kg_per_hectare*loc_area_1to6y, 
-                up_N_kg_per_hectare*up_area_1to7y + up_N_kg_per_hectare*loc_area_1to7y, 
-                up_N_kg_per_hectare*up_area_1to8y + up_N_kg_per_hectare*loc_area_1to8y, 
-                up_N_kg_per_hectare*up_area_1to9y + up_N_kg_per_hectare*loc_area_1to9y
+                up_N_kg_per_hectare*up_area_1to6y + up_N_kg_per_hectare*loc_area_1to6y
             )|
             wq_month + huc4^wq_year + huc8,
         cluster = "huc8"
@@ -166,8 +183,15 @@ m2b <- model_data %>%
 
 # Save model output
 options(width = 200)
+
 etable(
-    m2b,
+    old_het, # log10(WQ) ~ vars
+    se.below = FALSE,
+    digits.stats = 3
+)
+
+etable(
+    new_het, # asinh(WQ) ~ asinh(vars)
     se.below = FALSE,
     digits.stats = 3
 )
