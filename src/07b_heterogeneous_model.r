@@ -75,9 +75,9 @@ tidy_data <- crp_tidy %>%
     inner_join(ag_tidy) %>% 
     inner_join(nitro_tidy) %>% 
     inner_join(wqp_tidy) %>%
-    select(MLI, huc12, state, date, wq_month, wq_year, wq_conc, everything()) %>%
-    mutate(across(upstream_sqkm_crp_2012:upstream_sqkm_crp_2022, \(x) x/ag_area_sqkm_0_upstream)) %>%
-    mutate(across(local_sqkm_crp_2012:local_sqkm_crp_2022, \(x) x/ag_area_sqkm_0_nearby))
+    select(MLI, huc12, state, date, wq_month, wq_year, wq_conc, everything())
+    # mutate(across(upstream_sqkm_crp_2012:upstream_sqkm_crp_2022, \(x) x/ag_area_sqkm_0_upstream)) %>%
+    # mutate(across(local_sqkm_crp_2012:local_sqkm_crp_2022, \(x) x/ag_area_sqkm_0_nearby))
 
 # Create lagged version of data
 lagged_data <- tidy_data %>%
@@ -137,19 +137,19 @@ model_data <- lagged_data %>%
         loc_area_1to9y = rowMeans(across(local_sqkm_crp_lag1:local_sqkm_crp_lag9)),
         huc8 = str_sub(huc12,,8), 
         huc4 = str_sub(huc12,,4),
-        up_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot/100 # 100 hectares per sqkm
+        up_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot # /100 # 100 hectares per sqkm
     )
 
 # Run models
 m2b <- model_data %>%
-    mutate(
-        across(
-            c(starts_with("up_area"), starts_with("loc_area")),
-            asinh
-        )
-    ) %>%
+    # mutate(
+    #     across(
+    #         c(starts_with("up_area"), starts_with("loc_area")),
+    #         asinh
+    #     )
+    # ) %>%
     feols(
-        fml = asinh(wq_conc) ~ 
+        fml = log10(wq_conc) ~ 
             sw(
                 up_N_kg_per_hectare*up_area_1to2y + up_N_kg_per_hectare*loc_area_1to2y, 
                 up_N_kg_per_hectare*up_area_1to3y + up_N_kg_per_hectare*loc_area_1to3y, 
