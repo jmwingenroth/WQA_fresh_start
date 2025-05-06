@@ -12,10 +12,11 @@ invisible(lapply(list.files("src/lib", full.names = TRUE), source))
 # Load data
 wqp <- read_fst("./data/intermediate/wqp_pull.fst")
 
-huc12_key <- read_sf("./data/input/wqp_crp_upstream_and_local.gpkg") %>%
+wqp_crp <- read_sf("./data/input/wqp_crp_upstream_and_local.gpkg") %>%
     as_tibble() %>%
-    st_drop_geometry() %>%
-    select(MLI, huc12)
+    st_drop_geometry()
+
+huc12_mli <- select(wqp_crp, MLI, huc12)
 
 nitro <- read_fst("./data/intermediate/nitrogen_mass_by_MLI copy.fst")
 new_vars <- read_fst("./data/intermediate/new_vars_by_MLI.fst")
@@ -56,13 +57,17 @@ nitro_disenroll <- new_vars %>%
 
 crp_tidy <- new_vars %>%
     as_tibble() %>%
+    left_join(wqp_crp) %>%
     select(
         MLI,
+        X2012_upstream:X2022_upstream,
+        X2012_local:X2022_local,
         crp_area_enroll_2012_upstream:crp_area_enroll_2022_upstream,
         crp_area_disenroll_2012_upstream:crp_area_disenroll_2022_upstream,
         crp_area_enroll_2012_nearby:crp_area_enroll_2022_nearby,
         crp_area_disenroll_2012_nearby:crp_area_disenroll_2022_nearby
-    )
+    ) %>%
+    mutate(across(X2012_upstream:X2022_local, \(x) x*100, .names = "{.col}_hectare")) # convert to hectares
 
 wqp_tidy <- wqp %>%
     filter_wqp() %>% # See lib/ function for parameters
@@ -135,10 +140,10 @@ lagged_data <- tidy_data %>%
         names_from = lag,
         names_prefix = "URN_lag"
     ) %>%
-    # upstream new crp area
+    # upstream total crp area
     pivot_longer(
-        crp_area_enroll_2012_upstream:crp_area_enroll_2022_upstream, 
-        values_to = "UEA"
+        X2012_upstream:X2022_upstream, 
+        values_to = "up_crp_tot"
     ) %>%
     mutate(
         crp_year = as.numeric(str_extract(name, "[0-9]+")),
@@ -148,14 +153,14 @@ lagged_data <- tidy_data %>%
     arrange(lag) %>%
     select(-name, -crp_year) %>%
     pivot_wider(
-        values_from = UEA, 
+        values_from = up_crp_tot, 
         names_from = lag,
-        names_prefix = "UEA_lag"
+        names_prefix = "up_crp_tot_lag_"
     ) %>%
-    # upstream retiring crp area
+    # local total crp area
     pivot_longer(
-        crp_area_disenroll_2012_upstream:crp_area_disenroll_2022_upstream, 
-        values_to = "URA"
+        X2012_local:X2022_local, 
+        values_to = "loc_crp_tot"
     ) %>%
     mutate(
         crp_year = as.numeric(str_extract(name, "[0-9]+")),
@@ -165,132 +170,96 @@ lagged_data <- tidy_data %>%
     arrange(lag) %>%
     select(-name, -crp_year) %>%
     pivot_wider(
-        values_from = URA, 
+        values_from = loc_crp_tot, 
         names_from = lag,
-        names_prefix = "URA_lag"
-    ) %>%
-    # local new crp area
-    pivot_longer(
-        crp_area_enroll_2012_nearby:crp_area_enroll_2022_nearby, 
-        values_to = "LEA"
-    ) %>%
-    mutate(
-        crp_year = as.numeric(str_extract(name, "[0-9]+")),
-        lag = wq_year - crp_year
-    )  %>%
-    filter(lag >= 0) %>%
-    arrange(lag) %>%
-    select(-name, -crp_year) %>%
-    pivot_wider(
-        values_from = LEA, 
-        names_from = lag,
-        names_prefix = "LEA_lag"
-    ) %>%
-    # local retiring crp area
-    pivot_longer(
-        crp_area_disenroll_2012_nearby:crp_area_disenroll_2022_nearby, 
-        values_to = "LRA"
-    ) %>%
-    mutate(
-        crp_year = as.numeric(str_extract(name, "[0-9]+")),
-        lag = wq_year - crp_year
-    )  %>%
-    filter(lag >= 0) %>%
-    arrange(lag) %>%
-    select(-name, -crp_year) %>%
-    pivot_wider(
-        values_from = LRA, 
-        names_from = lag,
-        names_prefix = "LRA_lag"
+        names_prefix = "loc_crp_tot_lag_"
     )
 
-lagged_data_w_hucs <- left_join(lagged_data, huc12_key)
+lagged_data_w_hucs <- left_join(lagged_data, huc12_mli)
 
-# Average n years of lookback for n = x
-model_data_5 <- lagged_data_w_hucs %>%
+# Average n years of lookback for n = 3 to n = 6
+model_data <- lagged_data_w_hucs %>%
     mutate(
-        UEN = rowMeans(across(UEN_lag1:UEN_lag5)),
-        URN = rowMeans(across(URN_lag1:URN_lag5)),
-        UEA = rowMeans(across(UEA_lag1:UEA_lag5)),
-        URA = rowMeans(across(URA_lag1:URA_lag5)),
-        LEA = rowMeans(across(LEA_lag1:LEA_lag5)),
-        LRA = rowMeans(across(LRA_lag1:LRA_lag5)),
+
+        up_area_1to3y = rowMeans(across(up_crp_tot_lag_1:up_crp_tot_lag_3)),
+        up_area_1to4y = rowMeans(across(up_crp_tot_lag_1:up_crp_tot_lag_4)),
+        up_area_1to5y = rowMeans(across(up_crp_tot_lag_1:up_crp_tot_lag_5)),
+        up_area_1to6y = rowMeans(across(up_crp_tot_lag_1:up_crp_tot_lag_6)),
+
+        loc_area_1to3y = rowMeans(across(loc_crp_tot_lag_1:loc_crp_tot_lag_3)),
+        loc_area_1to4y = rowMeans(across(loc_crp_tot_lag_1:loc_crp_tot_lag_4)),
+        loc_area_1to5y = rowMeans(across(loc_crp_tot_lag_1:loc_crp_tot_lag_5)),
+        loc_area_1to6y = rowMeans(across(loc_crp_tot_lag_1:loc_crp_tot_lag_6)),
+
+        up_kg_N_enroll_1to3y = rowMeans(across(UEN_lag1:UEN_lag3)),
+        up_kg_N_enroll_1to4y = rowMeans(across(UEN_lag1:UEN_lag4)),
+        up_kg_N_enroll_1to5y = rowMeans(across(UEN_lag1:UEN_lag5)),
+        up_kg_N_enroll_1to6y = rowMeans(across(UEN_lag1:UEN_lag6)),
+
+        up_kg_N_retire_1to3y = rowMeans(across(URN_lag1:URN_lag3)),
+        up_kg_N_retire_1to4y = rowMeans(across(URN_lag1:URN_lag4)),
+        up_kg_N_retire_1to5y = rowMeans(across(URN_lag1:URN_lag5)),
+        up_kg_N_retire_1to6y = rowMeans(across(URN_lag1:URN_lag6)),
+        
         huc8 = str_sub(huc12,,8), 
         huc4 = str_sub(huc12,,4),
-        up_tot_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot/100, # 100 hectares per sqkm
-        up_enroll_N_kg_per_hectare = UEN/UEA/100,
-        up_retire_N_kg_per_hectare = URN/URA/100,
-        up_enroll_area_hectare = UEA/100,
-        up_retire_area_hectare = URA/100,
-        local_enroll_area_hectare = LEA/100,
-        local_retire_area_hectare = LRA/100
+        
+        up_N_dens = upstream_kg_N/upstream_sqkm_tot,
+        up_N_kg_per_hectare = up_N_dens/100 # 100 hectares per sqkm
+    
     )
 
-model_data_4 <- lagged_data_w_hucs %>%
+# Run models
+
+old_het <- model_data %>%
+    # mutate(
+    #     across(
+    #         c(starts_with("up_area"), starts_with("loc_area")),
+    #         asinh
+    #     )
+    # ) %>%
+    feols(
+        fml = log10(wq_conc) ~ 
+            sw(
+                up_N_dens*up_area_1to3y + up_N_dens*loc_area_1to3y, 
+                up_N_dens*up_area_1to4y + up_N_dens*loc_area_1to4y, 
+                up_N_dens*up_area_1to5y + up_N_dens*loc_area_1to5y,
+                up_N_dens*up_area_1to6y + up_N_dens*loc_area_1to6y
+            )|
+            wq_month + huc4^wq_year + huc8,
+        cluster = "huc8"
+    )
+
+new_het <- model_data %>%
     mutate(
-        UEN = rowMeans(across(UEN_lag1:UEN_lag4)),
-        URN = rowMeans(across(URN_lag1:URN_lag4)),
-        UEA = rowMeans(across(UEA_lag1:UEA_lag4)),
-        URA = rowMeans(across(URA_lag1:URA_lag4)),
-        LEA = rowMeans(across(LEA_lag1:LEA_lag4)),
-        LRA = rowMeans(across(LRA_lag1:LRA_lag4)),
-        huc8 = str_sub(huc12,,8), 
-        huc4 = str_sub(huc12,,4),
-        up_tot_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot/100, # 100 hectares per sqkm
-        up_enroll_N_kg_per_hectare = UEN/UEA/100,
-        up_retire_N_kg_per_hectare = URN/URA/100,
-        up_enroll_area_hectare = UEA/100,
-        up_retire_area_hectare = URA/100,
-        local_enroll_area_hectare = LEA/100,
-        local_retire_area_hectare = LRA/100
-    )
-
-model_data_6 <- lagged_data_w_hucs %>%
-    mutate(
-        UEN = rowMeans(across(UEN_lag1:UEN_lag6)),
-        URN = rowMeans(across(URN_lag1:URN_lag6)),
-        UEA = rowMeans(across(UEA_lag1:UEA_lag6)),
-        URA = rowMeans(across(URA_lag1:URA_lag6)),
-        LEA = rowMeans(across(LEA_lag1:LEA_lag6)),
-        LRA = rowMeans(across(LRA_lag1:LRA_lag6)),
-        huc8 = str_sub(huc12,,8), 
-        huc4 = str_sub(huc12,,4),
-        up_tot_N_kg_per_hectare = upstream_kg_N/upstream_sqkm_tot/100, # 100 hectares per sqkm
-        up_enroll_N_kg_per_hectare = UEN/UEA/100,
-        up_retire_N_kg_per_hectare = URN/URA/100,
-        up_enroll_area_hectare = UEA/100,
-        up_retire_area_hectare = URA/100,
-        local_enroll_area_hectare = LEA/100,
-        local_retire_area_hectare = LRA/100
-    )
-
-models_data <- list(model_data_4, model_data_5, model_data_6)
-models <- list()
-for (i in seq_along(models_data)) {
-
-    models[[i]] <- models_data[[i]] %>%
-        # mutate(
-        #     across(
-        #         c(ends_with("A_1to5")),
-        #         asinh
-        #     )
-        # ) %>%
-        feols(
-            fml = asinh(wq_conc) ~ 
-                (up_tot_N_kg_per_hectare + up_enroll_N_kg_per_hectare) * (local_enroll_area_hectare + up_enroll_area_hectare) + 
-                (up_tot_N_kg_per_hectare + up_retire_N_kg_per_hectare) * (local_retire_area_hectare + up_retire_area_hectare) |
-                wq_month + huc4^wq_year + huc8,
-            cluster = "huc8"
+        across(
+            c(starts_with("up_area"), starts_with("loc_area")),
+            asinh
         )
-
-}
+    ) %>%
+    feols(
+        fml = asinh(wq_conc) ~ 
+            sw(
+                up_N_kg_per_hectare*up_area_1to3y + up_N_kg_per_hectare*loc_area_1to3y, 
+                up_N_kg_per_hectare*up_area_1to4y + up_N_kg_per_hectare*loc_area_1to4y, 
+                up_N_kg_per_hectare*up_area_1to5y + up_N_kg_per_hectare*loc_area_1to5y,
+                up_N_kg_per_hectare*up_area_1to6y + up_N_kg_per_hectare*loc_area_1to6y
+            )|
+            wq_month + huc4^wq_year + huc8,
+        cluster = "huc8"
+    )
 
 # Save model output
 options(width = 200)
+
 etable(
-    lag_1to4 = models[[1]],
-    lag_1to5 = models[[2]],
-    lag_1to6 = models[[3]],
+    old_het, # log10(WQ) ~ vars
+    se.below = FALSE,
+    digits.stats = 3
+)
+
+etable(
+    new_het, # asinh(WQ) ~ asinh(vars)
     se.below = FALSE,
     digits.stats = 3
 )
