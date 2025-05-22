@@ -167,6 +167,40 @@ lagged_data <- tidy_data %>%
         values_from = upstream_N_retire, 
         names_from = lag,
         names_prefix = "upstream_N_retire_lag"
+    ) %>%
+    # local N enroll
+    pivot_longer(
+        kg_N_enroll_2012_nearby:kg_N_enroll_2022_nearby, 
+        values_to = "local_N_enroll"
+    ) %>%
+    mutate(
+        crp_year = as.numeric(str_extract(name, "[0-9]+")),
+        lag = wq_year - crp_year
+    )  %>%
+    filter(lag >= 0) %>%
+    arrange(lag) %>%
+    select(-name, -crp_year) %>%
+    pivot_wider(
+        values_from = local_N_enroll, 
+        names_from = lag,
+        names_prefix = "local_N_enroll_lag"
+    ) %>%
+    # local N retire
+    pivot_longer(
+        fertilizer_mass_2012_nearby:fertilizer_mass_2022_nearby, 
+        values_to = "local_N_retire"
+    ) %>%
+    mutate(
+        crp_year = as.numeric(str_extract(name, "[0-9]+")),
+        lag = wq_year - crp_year
+    )  %>%
+    filter(lag >= 0) %>%
+    arrange(lag) %>%
+    select(-name, -crp_year) %>%
+    pivot_wider(
+        values_from = local_N_retire, 
+        names_from = lag,
+        names_prefix = "local_N_retire_lag"
     )
 
 # Average n years of lookback for n = 3 to n = 6
@@ -201,6 +235,16 @@ model_data <- lagged_data %>%
         up_N_retire_1to4y = rowMeans(across(upstream_N_retire_lag1:upstream_N_retire_lag4)),
         up_N_retire_1to5y = rowMeans(across(upstream_N_retire_lag1:upstream_N_retire_lag5)),
         up_N_retire_1to6y = rowMeans(across(upstream_N_retire_lag1:upstream_N_retire_lag6)),
+
+        loc_N_enroll_1to3y = rowMeans(across(local_N_enroll_lag1:local_N_enroll_lag3)),
+        loc_N_enroll_1to4y = rowMeans(across(local_N_enroll_lag1:local_N_enroll_lag4)),
+        loc_N_enroll_1to5y = rowMeans(across(local_N_enroll_lag1:local_N_enroll_lag5)),
+        loc_N_enroll_1to6y = rowMeans(across(local_N_enroll_lag1:local_N_enroll_lag6)),
+
+        loc_N_retire_1to3y = rowMeans(across(local_N_retire_lag1:local_N_retire_lag3)),
+        loc_N_retire_1to4y = rowMeans(across(local_N_retire_lag1:local_N_retire_lag4)),
+        loc_N_retire_1to5y = rowMeans(across(local_N_retire_lag1:local_N_retire_lag5)),
+        loc_N_retire_1to6y = rowMeans(across(local_N_retire_lag1:local_N_retire_lag6)),
 
         huc8 = str_sub(huc12,,8), 
         huc4 = str_sub(huc12,,4),
@@ -255,43 +299,23 @@ delta_N <- model_data %>%
             sw(
                 up_N_kg_per_hectare*up_area_1to3y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to3y_hectares +
-                    up_N_enroll_1to3y + up_N_retire_1to3y, 
+                    up_N_enroll_1to3y + up_N_retire_1to3y +
+                    loc_N_enroll_1to3y + loc_N_retire_1to3y, 
 
                 up_N_kg_per_hectare*up_area_1to4y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to4y_hectares +
-                    up_N_enroll_1to4y + up_N_retire_1to4y, 
+                    up_N_enroll_1to4y + up_N_retire_1to4y +
+                    loc_N_enroll_1to4y + loc_N_retire_1to4y, 
 
                 up_N_kg_per_hectare*up_area_1to5y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to5y_hectares +
-                    up_N_enroll_1to5y + up_N_retire_1to5y, 
+                    up_N_enroll_1to5y + up_N_retire_1to5y +
+                    loc_N_enroll_1to5y + loc_N_retire_1to5y, 
 
                 up_N_kg_per_hectare*up_area_1to6y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to6y_hectares +
-                    up_N_enroll_1to6y + up_N_retire_1to6y
-            )|
-            wq_month + huc4^wq_year + huc8,
-        cluster = "huc8"
-    )
-
-delta_N <- model_data %>%
-    feols(
-        fml = log10(wq_conc) ~ 
-            sw(
-                up_N_kg_per_hectare*up_area_1to3y_hectares + 
-                    up_N_kg_per_hectare*loc_area_1to3y_hectares +
-                    up_N_enroll_1to3y + up_N_retire_1to3y, 
-
-                up_N_kg_per_hectare*up_area_1to4y_hectares + 
-                    up_N_kg_per_hectare*loc_area_1to4y_hectares +
-                    up_N_enroll_1to4y + up_N_retire_1to4y, 
-
-                up_N_kg_per_hectare*up_area_1to5y_hectares + 
-                    up_N_kg_per_hectare*loc_area_1to5y_hectares +
-                    up_N_enroll_1to5y + up_N_retire_1to5y, 
-
-                up_N_kg_per_hectare*up_area_1to6y_hectares + 
-                    up_N_kg_per_hectare*loc_area_1to6y_hectares +
-                    up_N_enroll_1to6y + up_N_retire_1to6y
+                    up_N_enroll_1to6y + up_N_retire_1to6y +
+                    loc_N_enroll_1to6y + loc_N_retire_1to6y
             )|
             wq_month + huc4^wq_year + huc8,
         cluster = "huc8"
