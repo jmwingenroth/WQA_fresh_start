@@ -246,6 +246,16 @@ model_data <- lagged_data %>%
         loc_N_retire_1to5y = rowMeans(across(local_N_retire_lag1:local_N_retire_lag5)),
         loc_N_retire_1to6y = rowMeans(across(local_N_retire_lag1:local_N_retire_lag6)),
 
+        up_N_diff_1to3y = up_N_enroll_1to3y - up_N_retire_1to3y,
+        up_N_diff_1to4y = up_N_enroll_1to4y - up_N_retire_1to4y,
+        up_N_diff_1to5y = up_N_enroll_1to5y - up_N_retire_1to5y,
+        up_N_diff_1to6y = up_N_enroll_1to6y - up_N_retire_1to6y,
+
+        loc_N_diff_1to3y = loc_N_enroll_1to3y - loc_N_retire_1to3y,
+        loc_N_diff_1to4y = loc_N_enroll_1to4y - loc_N_retire_1to4y,
+        loc_N_diff_1to5y = loc_N_enroll_1to5y - loc_N_retire_1to5y,
+        loc_N_diff_1to6y = loc_N_enroll_1to6y - loc_N_retire_1to6y,
+
         huc8 = str_sub(huc12,,8), 
         huc4 = str_sub(huc12,,4),
 
@@ -297,25 +307,17 @@ delta_N <- model_data %>%
     feols(
         fml = log10(wq_conc) ~ 
             sw(
-                up_N_kg_per_hectare*up_area_1to3y_hectares + 
-                    up_N_kg_per_hectare*loc_area_1to3y_hectares +
-                    up_N_enroll_1to3y + up_N_retire_1to3y +
-                    loc_N_enroll_1to3y + loc_N_retire_1to3y, 
-
                 up_N_kg_per_hectare*up_area_1to4y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to4y_hectares +
-                    up_N_enroll_1to4y + up_N_retire_1to4y +
-                    loc_N_enroll_1to4y + loc_N_retire_1to4y, 
+                    up_N_diff_1to4y + loc_N_diff_1to4y, 
 
                 up_N_kg_per_hectare*up_area_1to5y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to5y_hectares +
-                    up_N_enroll_1to5y + up_N_retire_1to5y +
-                    loc_N_enroll_1to5y + loc_N_retire_1to5y, 
+                    up_N_diff_1to5y + loc_N_diff_1to5y, 
 
                 up_N_kg_per_hectare*up_area_1to6y_hectares + 
                     up_N_kg_per_hectare*loc_area_1to6y_hectares +
-                    up_N_enroll_1to6y + up_N_retire_1to6y +
-                    loc_N_enroll_1to6y + loc_N_retire_1to6y
+                    up_N_diff_1to6y + loc_N_diff_1to6y
             )|
             wq_month + huc4^wq_year + huc8,
         cluster = "huc8"
@@ -324,18 +326,6 @@ delta_N <- model_data %>%
 
 # Save model output
 options(width = 200)
-
-etable(
-    old_het, # log10(WQ) ~ vars
-    se.below = FALSE,
-    digits.stats = 3
-)
-
-etable(
-    new_het, # use hectares
-    se.below = FALSE,
-    digits.stats = 3
-)
 
 etable(
     delta_N, # add terms for mass N enrolled and retired
@@ -349,67 +339,33 @@ etable(
 effects <- model_data %>%
     st_drop_geometry() %>%
     transmute(
-        disentanglement_new_upstream_N_density = up_N_kg_per_hectare * 0.0024,
-        disentanglement_new_upstream_CRP_area = up_area_1to4y_hectares * 1.07e-5,
-        disentanglement_new_local_CRP_area = loc_area_1to4y_hectares * -1.83e-6,
-        disentanglement_new_upstream_removed_nitrogen = up_N_enroll_1to4y * 2.18e-8,
-        disentanglement_new_upstream_returned_nitrogen = up_N_retire_1to4y * -1.73e-6,
-        disentanglement_new_local_removed_nitrogen = loc_N_enroll_1to4y * -1.96e-7,
-        disentanglement_new_local_returned_nitrogen = loc_N_retire_1to4y * 1.44e-6,
-        disentanglement_new_upstream_filtration = up_N_kg_per_hectare * up_area_1to4y_hectares * -7.54e-7,        
-        disentanglement_new_local_CRP_control = up_N_kg_per_hectare * loc_area_1to4y_hectares * 6.15e-8,
-        disentanglement_old_upstream_N_density = up_N_kg_per_hectare * 0.0023,
-        disentanglement_old_upstream_CRP_area = up_area_1to4y_hectares * 9e-6,
-        disentanglement_old_local_CRP_area = loc_area_1to4y_hectares * 2.89e-7,
-        disentanglement_old_upstream_removed_nitrogen = up_N_enroll_1to4y * -4.68e-8,
-        disentanglement_old_upstream_returned_nitrogen = up_N_retire_1to4y * -4.55e-7,
-        disentanglement_old_upstream_filtration = up_N_kg_per_hectare * up_area_1to4y_hectares * -8.24e-7,        
-        disentanglement_old_local_CRP_control = up_N_kg_per_hectare * loc_area_1to4y_hectares * 9.98e-8,
-        heterogeneous_upstream_N_density = up_N_kg_per_hectare * 0.0023,
-        heterogeneous_upstream_CRP_area = up_area_1to4y_hectares * 8.57e-6,
-        heterogeneous_local_CRP_area = loc_area_1to4y_hectares * 2.56e-7,
-        heterogeneous_upstream_filtration = up_N_kg_per_hectare * up_area_1to4y_hectares * -8.63e-7,        
-        heterogeneous_local_CRP_control = up_N_kg_per_hectare * loc_area_1to4y_hectares * 1.03e-7                
+        disentanglement_new_local_CRP_area = loc_area_1to4y_hectares * -1.29e-7,
+        disentanglement_new_local_CRP_control = up_N_kg_per_hectare * loc_area_1to4y_hectares * 9.87e-8,
+        disentanglement_new_local_net_enrollment = loc_N_diff_1to4y * -5.26e-7,
+        disentanglement_new_upstream_CRP_area = up_area_1to4y_hectares * 8.96e-6,
+        disentanglement_new_upstream_N_density = up_N_kg_per_hectare * 0.0023,
+        disentanglement_new_upstream_filtration = up_N_kg_per_hectare * up_area_1to4y_hectares * -8.65e-7,
+        disentanglement_new_upstream_net_enrollment = up_N_diff_1to4y * 5.84e-7
     )
-
-p2 <- effects %>%
-    pivot_longer(everything()) %>%
-    mutate(
-        model = str_extract(name, "disentanglement_new|disentanglement_old|heterogeneous"),
-        variable = str_extract(name, "(upstream|local).*")
-    ) %>%
-#    filter(variable != "upstream_N_density") %>%
-    filter(value != 0) %>%
-    filter(abs(value) < 0.03) %>%
-    ggplot(aes(x = value, fill = variable)) +
-    geom_density() +
-    geom_vline(xintercept = 0) +
-    facet_grid(model~variable) +
-    scale_y_continuous(limits = c(NA, 300)) +
-    theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggsave("figs/test/07b_effects.png", p2, height = 7, width = 18)
 
 effects %>%
     pivot_longer(everything()) %>%
     mutate(
-        model = str_extract(name, "disentanglement_new|disentanglement_old|heterogeneous"),
         variable = str_extract(name, "(upstream|local).*")
     ) %>%
     filter(value !=0) %>%
-    group_by(model, variable) %>%
+    group_by(variable) %>%
     summarize(average = paste0(round(mean(value), 5), " (", round(median(value), 5), ")")) %>%
-    pivot_wider(values_from = average, names_from = model) %>% 
+#    pivot_wider(values_from = average, names_from = variable) %>% 
     knitr::kable()
 
 effects %>%
     pivot_longer(everything()) %>%
     mutate(
-        model = str_extract(name, "disentanglement_new|disentanglement_old|heterogeneous"),
         variable = str_extract(name, "(upstream|local).*")
     ) %>%
     filter(!is.na(value)) %>%
-    group_by(model, variable) %>%
+    group_by(variable) %>%
     summarize(average = paste0(round(mean(value), 5), " (", round(median(value), 5), ")")) %>%
-    pivot_wider(values_from = average, names_from = model) %>% 
+#    pivot_wider(values_from = average, names_from = variable) %>% 
     knitr::kable()
