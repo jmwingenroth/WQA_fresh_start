@@ -4,7 +4,6 @@ library(dplyr)
 library(fst)
 
 # Load parameters
-query_size <- 3000
 mli_convert_to_numeric <- c(
     "HorizontalAccuracyMeasure.MeasureValue",
     "VerticalMeasure.MeasureValue"

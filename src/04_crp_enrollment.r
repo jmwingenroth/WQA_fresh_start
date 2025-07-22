@@ -25,4 +25,7 @@ for (i in 1:length(crp_fips)) {
     max(temp_stack*crp_years, na.rm = TRUE) %>%
         writeRaster(paste0(disenroll_crp_write_dir,"ras_",crp_fips[i],"_disenroll_50m.tif"))
 
+    min(temp_stack*crp_years, na.rm = TRUE) %>%
+        writeRaster(paste0(enroll_crp_write_dir,"ras_",crp_fips[i],"_enroll_50m.tif"))
+
 }
