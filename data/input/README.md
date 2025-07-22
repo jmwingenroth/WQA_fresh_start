@@ -23,3 +23,7 @@ Raw data for United States taken from .xlsx workbook available on [Dryad](https:
 ## state_fips_key.csv
 
 A key for converting between state names, abbreviations, and FIPS codes
+
+## wqp_crp_upstream_and_local.gpkg
+
+An intermediate data file created in the original "WQA" repo

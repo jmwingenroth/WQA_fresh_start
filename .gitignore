@@ -2,3 +2,10 @@ data/intermediate/wqp_pull.fst
 data/intermediate/mli_pull.fst
 data/intermediate/nitrogen_mass_by_huc12.fst
 data/intermediate/nitrogen_mass_by_MLI.fst
+data/input/wqp_crp_upstream_and_local.gpkg
+data/intermediate/ag_area_by_huc12.fst
+data/intermediate/crp_disenroll_by_huc12_messy.fst
+data/intermediate/crp_enroll_by_huc12_messy.fst
+data/intermediate/nitrogen_disenroll_mass_by_huc12.fst
+data/intermediate/ag_area_by_MLI.fst
+data/intermediate/new_vars_by_MLI.fst

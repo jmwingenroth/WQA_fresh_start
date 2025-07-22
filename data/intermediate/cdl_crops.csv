@@ -1,122 +1,123 @@
 value,Class_Names,Histogram
-152,Shrubland,1930321388
-176,Grassland/Pasture,1744621981
-142,Evergreen Forest,1119067380
-141,Deciduous Forest,1075449387
-1,Corn,408946385
-190,Woody Wetlands,340565017
-5,Soybeans,316973699
-121,Developed/Open Space,289242304
-24,Winter Wheat,155521512
-111,Open Water,148144772
-143,Mixed Forest,134936677
-122,Developed/Low Intensity,127636333
-61,Fallow/Idle Cropland,117769981
-195,Herbaceous Wetlands,105625576
-37,Other Hay/Non Alfalfa,105204059
-131,Barren,92965495
-36,Alfalfa,78271280
-2,Cotton,70341119
-23,Spring Wheat,59991178
-123,Developed/Med Intensity,51000156
-4,Sorghum,22734341
-26,Dbl Crop WinWht/Soybeans,22075689
-124,Developed/High Intensity,17605274
-3,Rice,12215517
-21,Barley,7856114
-212,Oranges,5694378
-6,Sunflower,5368589
-28,Oats,5245719
-42,Dry Beans,5090787
-22,Durum Wheat,5078434
-75,Almonds,5037569
-10,Peanuts,5003955
-41,Sugarbeets,4881908
-43,Potatoes,4692424
-31,Canola,4428098
-45,Sugarcane,4241144
-59,Sod/Grass Seed,3827488
-69,Grapes,3632074
-68,Apples,2362927
-53,Peas,2150644
-27,Rye,2130845
-29,Millet,2075242
-112,Perennial Ice/Snow ,1892567
-52,Lentils,1686690
-225,Dbl Crop WinWht/Corn,1660728
-54,Tomatoes,1582365
-76,Walnuts,1551055
-74,Pecans,1481775
-236,Dbl Crop WinWht/Sorghum,1334737
-238,Dbl Crop WinWht/Cotton,1286425
-12,Sweet Corn,1223765
-92,Aquaculture,1016395
-204,Pistachios,997456
-58,Clover/Wildflowers,917075
-44,Other Crops,841459
-66,Cherries,786956
-205,Triticale,680636
-72,Citrus,602438
-49,Onions,601817
-242,Blueberries,557847
-33,Safflower,548990
-226,Dbl Crop Oats/Corn,518091
-70,Christmas Trees,498470
-254,Dbl Crop Barley/Soybeans,466527
-32,Flaxseed,435659
-13,Pop or Orn Corn,415076
-57,Herbs,387297
-211,Olives,303978
-241,Dbl Crop Corn/Soybeans,279172
-47,Misc Vegs & Fruits,254538
-71,Other Tree Crops,246270
-46,Sweet Potatoes,239550
-220,Plums,190190
-206,Carrots,189708
-250,Cranberries,177839
-67,Peaches,177517
-11,Tobacco,167839
-48,Watermelons,152859
-77,Pears,150349
-217,Pomegranates,149269
-237,Dbl Crop Barley/Corn,142148
-230,Dbl Crop Lettuce/Durum Wht,135224
-239,Dbl Crop Soybeans/Cotton,129166
-227,Lettuce,113689
-60,Switchgrass,106150
-209,Cantaloupes,103122
-221,Strawberries,98198
-208,Garlic,93896
-229,Pumpkins,91007
-216,Peppers,90930
-207,Asparagus,88720
-222,Squash,88052
-243,Cabbage,85678
-240,Dbl Crop Soybeans/Oats,74581
-56,Hops,63151
-14,Mint,59012
-232,Dbl Crop Lettuce/Cotton,53192
-35,Mustard,50415
-214,Broccoli,47274
-224,Vetch,47130
-235,Dbl Crop Barley/Sorghum,46207
-219,Greens,43391
-218,Nectarines,40785
-246,Radishes,27493
-30,Speltz,24262
-213,Honeydew Melons,23409
-50,Cucumbers,22789
-55,Caneberries,14816
-231,Dbl Crop Lettuce/Cantaloupe,12922
-25,Other Small Grains,12024
-244,Cauliflower,11643
-247,Turnips,9873
-223,Apricots,9035
-38,Camelina,7436
-34,Rape Seed,5511
-245,Celery,3025
-210,Prunes,2879
-234,Dbl Crop Durum Wht/Sorghum,1599
-249,Gourds,1034
-248,Eggplants,694
-233,Dbl Crop Lettuce/Barley,449
+152,Shrubland,2055476945
+176,Grassland/Pasture,1487375741
+142,Evergreen Forest,1095790441
+141,Deciduous Forest,898426874
+1,Corn,436724585
+190,Woody Wetlands,399522619
+5,Soybeans,378259420
+143,Mixed Forest,262136713
+121,Developed/Open Space,239756338
+111,Open Water,154958265
+122,Developed/Low Intensity,153410743
+24,Winter Wheat,135218228
+195,Herbaceous Wetlands,121995660
+37,Other Hay/Non Alfalfa,121571517
+123,Developed/Med Intensity,92700486
+36,Alfalfa,89171242
+131,Barren,86718957
+61,Fallow/Idle Cropland,70660074
+23,Spring Wheat,58810534
+2,Cotton,53083290
+4,Sorghum,42802358
+124,Developed/High Intensity,33082773
+26,Dbl Crop WinWht/Soybeans,20440254
+3,Rice,13562262
+21,Barley,12759035
+31,Canola,10735366
+75,Almonds,8424681
+10,Peanuts,7707767
+28,Oats,7669676
+22,Durum Wheat,7016917
+42,Dry Beans,5464136
+45,Sugarcane,5355350
+59,Sod/Grass Seed,5338563
+6,Sunflower,5310285
+53,Peas,4892561
+41,Sugarbeets,4844750
+69,Grapes,4818459
+43,Potatoes,4788379
+29,Millet,4290628
+205,Triticale,3410909
+204,Pistachios,3298982
+27,Rye,3258718
+212,Oranges,2935734
+236,Dbl Crop WinWht/Sorghum,2921212
+52,Lentils,2373871
+92,Aquaculture,2365792
+76,Walnuts,2241418
+74,Pecans,2162981
+68,Apples,2068559
+72,Citrus,1830282
+51,Chick Peas,1747380
+54,Tomatoes,1440810
+225,Dbl Crop WinWht/Corn,1351639
+238,Dbl Crop WinWht/Cotton,1293600
+12,Sweet Corn,1270677
+66,Cherries,1122421
+228,Dbl Crop Triticale/Corn,1101540
+242,Blueberries,1023501
+35,Mustard,971403
+71,Other Tree Crops,896520
+13,Pop or Orn Corn,866047
+112,Perennial Ice/Snow,807715
+210,Prunes,795698
+33,Safflower,749373
+58,Clover/Wildflowers,695082
+32,Flaxseed,678299
+49,Onions,641872
+11,Tobacco,521014
+46,Sweet Potatoes,491514
+67,Peaches,436779
+56,Hops,345076
+70,Christmas Trees,319243
+44,Other Crops,305761
+57,Herbs,301155
+211,Olives,300549
+226,Dbl Crop Oats/Corn,289577
+206,Carrots,234553
+77,Pears ,233979
+14,Mint,222537
+215,Avocados,217518
+254,Dbl Crop Barley/Soybeans,210883
+38,Camelina,202182
+208,Garlic,178610
+227,Lettuce,169759
+50,Cucumbers,164285
+48,Watermelons,163504
+47,Misc Vegs & Fruits,156466
+219,Greens,149475
+217,Pomegranates,147488
+229,Pumpkins,133712
+223,Apricots,125504
+237,Dbl Crop Barley/Corn,123876
+243,Cabbage,113242
+39,Buckwheat,112994
+221,Strawberries,92206
+220,Plums,90930
+240,Dbl Crop Soybeans/Oats,89908
+222,Squash,83855
+214,Broccoli,78784
+216,Peppers,76636
+55,Caneberries,64975
+209,Cantaloupes,49838
+250,Cranberries,48234
+232,Dbl Crop Lettuce/Cotton,40204
+231,Dbl Crop Lettuce/Cantaloupe,37998
+233,Dbl Crop Lettuce/Barley,31796
+25,Other Small Grains,28978
+60,Switchgrass,27379
+247,Turnips,25168
+241,Dbl Crop Corn/Soybeans,18351
+30,Speltz,16867
+246,Radishes,16553
+213,Honeydew Melons,14832
+218,Nectarines,13281
+244,Cauliflower,11353
+245,Celery,8270
+34,Rape Seed,7552
+224,Vetch,5288
+207,Asparagus,4973
+249,Gourds,3708
+248,Eggplants,3479
+235,Dbl Crop Barley/Sorghum,671
